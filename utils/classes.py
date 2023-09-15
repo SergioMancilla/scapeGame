@@ -17,6 +17,7 @@ class Player(pygame.sprite.Sprite):
         self.images_idle = main_idle
         self.images_run = main_run
         self.setImage(self.images_idle[0])
+        self.images_move = self.images_idle
 
     speed: int
     num_keys_collected: int
