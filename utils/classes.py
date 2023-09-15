@@ -3,7 +3,7 @@ import random
 
 import pygame
 
-from .animations import *
+from .load_animations import *
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, qualities: dict) -> None:
@@ -112,6 +112,32 @@ class Walker(Enemy, pygame.sprite.Sprite):
     images_idle = walker_idle
     images_run = walker_run
     
-        
 
+class Key(pygame.sprite.Sprite):
+    def __init__(self) -> None:
+        super().__init__()
+        self.setImage(key_images[0])
+        self.images = key_images
         
+    def setImage(self, image):
+        self.image = image
+        self.rect = self.image.get_rect()
+
+    def setInitialPosition(self, x_pos: int, y_pos: int):
+        self.rect.x = x_pos;
+        self.rect.y = y_pos;
+
+class Door(pygame.sprite.Sprite):
+    def __init__(self) -> None:
+        super().__init__()
+        self.door_closed = door_images[0]
+        self.door_open = door_images[1]
+        self.setImage(self.door_closed)
+    
+    def setImage(self, image):
+        self.image = image
+        self.rect = self.image.get_rect()
+
+    def setInitialPosition(self, x_pos: int, y_pos: int):
+        self.rect.x = x_pos;
+        self.rect.y = y_pos;

@@ -1,7 +1,7 @@
 import random
 import pygame
 from utils.init_characters import *
-from utils.animations import *
+from utils.load_animations import *
 
 pygame.init()
 screen_width = 1000
@@ -22,12 +22,16 @@ class Game():
         super().__init__()
 
     mob_sprite_list = pygame.sprite.Group()
+    key_sprite_list = pygame.sprite.Group()
     all_sprite_list = pygame.sprite.Group()
 
     # Mask for make the flashlight effect
-    flash_radio = 70
-    flashlight = pygame.Surface((2 * flash_radio, 2 * flash_radio), pygame.SRCALPHA)
-    pygame.draw.circle(flashlight, (255, 255, 255, 150), (flash_radio, flash_radio), flash_radio)
+    flash_radio = 500
+    font = pygame.font.SysFont("serif", 26)
+
+    def makeCircleFlash(self):
+        self.flashlight = pygame.Surface((2 * self.flash_radio, 2 * self.flash_radio), pygame.SRCALPHA)
+        pygame.draw.circle(self.flashlight, (148, 95, 38, 150), (self.flash_radio, self.flash_radio), self.flash_radio)
 
     def drawLifeBar(self, current_life: int):
         bar_width = 150
@@ -65,19 +69,33 @@ class Game():
         self.player.setInitialPosition(0, screen_height - self.player_height)
         self.all_sprite_list.add(self.player)
 
+    def generateKeys(self, num_keys: int):
+        for i in range(num_keys):
+            key = createKey()
+            key.setInitialPosition(random.randrange(screen_width), random.randrange(screen_height))
+            self.all_sprite_list.add(key)
+            self.key_sprite_list.add(key)
+
+    def generateDoor(self):
+        self.door = createDoor()
+        self.door.setInitialPosition(random.randrange(screen_width), random.randrange(screen_height))
+        self.all_sprite_list.add(self.door)
+
 game = Game()
 n_enemies = 30
+n_keys = 5
 game.generateEnemies(n_enemies)
 game.generatePlayer()
+game.makeCircleFlash()
+game.generateKeys(n_keys)
+game.generateDoor()
+
+n_keys_remaining = n_keys
 
 # For the animation purposes: every n clock lap
 animation_index = 0
 animation_timer = 0
 animation_delay = 5
-
-background = pygame.image.load("assets/fondo.jpg")
-background = pygame.transform.scale(background, (screen_width, screen_height))
-
 
 # --------------------------------------------------------------------
 
@@ -87,7 +105,6 @@ while running:
             running = False
 
     screen.fill("black")
-    # screen.blit(background, (0, 0))
 
 
     # flashlight effect
@@ -100,9 +117,16 @@ while running:
     screen2 = screen.copy() 
     screen2.blit(game.flashlight, flashlight_rect.topleft)
     screen2.blit(game.player.image, game.player.rect.topleft)
+
+    # Render the enemies and other objects if they are near to the main character
     for mob in game.mob_sprite_list:
-        if abs(mob.rect.x - game.player.rect.x) < game.flash_radio -5 and abs(mob.rect.y - game.player.rect.y) < game.flash_radio -5:
+        if abs(mob.rect.x - game.player.rect.x) < game.flash_radio -20 and abs(mob.rect.y - game.player.rect.y) < game.flash_radio -20:
             screen2.blit(mob.image, mob.rect.topleft)
+    for key in game.key_sprite_list:
+        if abs(key.rect.x - game.player.rect.x) < game.flash_radio -20 and abs(key.rect.y - game.player.rect.y) < game.flash_radio -20:
+            screen2.blit(key.image, key.rect.topleft)
+    if abs(game.door.rect.x - game.player.rect.x) < game.flash_radio -20 and abs(game.door.rect.y - game.player.rect.y) < game.flash_radio -20:
+        screen2.blit(game.door.image, game.door.rect.topleft)
 
     screen.blit(screen2, (0, 0))
     
@@ -116,12 +140,18 @@ while running:
             mob.image = mob.images_run[animation_index]
             game.player.image = game.player.images_move[animation_index]
             mob.changePosition()
+        for key in game.key_sprite_list:
+            key.image = key.images[animation_index]
         animation_timer = 0
     else:
         animation_timer += 1
+    if n_keys_remaining <= 0:
+        game.door.image = game.door.door_open
 
 
     mob_collider_list = pygame.sprite.groupcollide(game.mob_sprite_list, [game.player], True, False)
+    key_collider_list = pygame.sprite.groupcollide(game.key_sprite_list, [game.player], True, False)
+    door_collider_list = pygame.sprite.groupcollide([game.door], [game.player], False, False)
 
     # Game controls
     keys = pygame.key.get_pressed()
@@ -138,10 +168,23 @@ while running:
         game.player.playerIdle()
 
 
-    # Drawing the lifebar
+    # In case of collition
     for mob in mob_collider_list:
         game.player.reduceBlood(mob.damage)
+        screen.fill("red")
+    for key in key_collider_list:
+        n_keys_remaining -= 1
+        print(n_keys_remaining)
+    for door in door_collider_list:
+        if n_keys_remaining <= 0:
+            print("PASASTE AL SIGUIENTE NIVEL")
+    
     game.drawLifeBar(game.player.blood)
+
+    # Rendering the score
+    score_text = "Llaves restantes: " + str(n_keys_remaining)
+    score_render = game.font.render(score_text, True, WHITE)
+    screen.blit(score_render, [200, 13])
     
 
     pygame.display.flip()
