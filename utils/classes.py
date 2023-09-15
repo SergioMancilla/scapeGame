@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 import random
 
 import pygame
@@ -54,8 +54,6 @@ class Player(pygame.sprite.Sprite):
         else:
             self.blood = 0
             self.isAlive = False
-            print("MUERTO")
-        print(self.blood)
 
 # Enemies
 class Enemy(ABC):
