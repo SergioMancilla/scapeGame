@@ -21,13 +21,12 @@ GRAY = (168, 179, 176)
 class Game():
     def __init__(self) -> None:
         super().__init__()
-
-    mob_sprite_list = pygame.sprite.Group()
-    key_sprite_list = pygame.sprite.Group()
-    all_sprite_list = pygame.sprite.Group()
+        self.mob_sprite_list = pygame.sprite.Group()
+        self.key_sprite_list = pygame.sprite.Group()
+        self.all_sprite_list = pygame.sprite.Group()
 
     # Mask for make the flashlight effect
-    flash_radio = 500
+    flash_radio = 70
     font = pygame.font.SysFont("serif", 26)
     font_small = pygame.font.SysFont("serif", 16)
 
@@ -84,24 +83,45 @@ class Game():
         self.all_sprite_list.add(self.door)
 
 def gameOver():
-    pass
+    screen.fill("black")
+    game_over_text = game.font.render("GAME OVER", True, WHITE)
+    game_over_info = game.font_small.render("Da click en cualquier lugar para volver al menú principal", True, GRAY)
+    game_over_text_rect = game_over_text.get_rect(center=(screen_width // 2, screen_height // 2))
+    game_over_info_rect = game_over_info.get_rect(center=(screen_width // 2, screen_height // 2 + 30))
+    screen.blit(game_over_text, game_over_text_rect.topleft)
+    screen.blit(game_over_info, game_over_info_rect.topleft)
+
+def goMainMenu():
+    global n_keys, n_enemies
+    n_keys = 0
+    n_enemies = 0
+    global is_main_menu
+    is_main_menu = True
+    screen.fill("white")
+    game_over_text = game.font.render("SCAPE GAME", True, BLACK)
+    game_over_info = game.font_small.render("Da click en cualquier lugar para comenzar", True, GRAY)
+    game_over_text_rect = game_over_text.get_rect(center=(screen_width // 2, screen_height // 2))
+    game_over_info_rect = game_over_info.get_rect(center=(screen_width // 2, screen_height // 2 + 30))
+    screen.blit(game_over_text, game_over_text_rect.topleft)
+    screen.blit(game_over_info, game_over_info_rect.topleft)
 
 def nextLevel():
     game.__init__()
     global n_enemies, n_keys, n_keys_remaining
     n_enemies += 5
-    n_keys += 1
+    n_keys += 2
     generateCharacters(n_enemies, n_keys)
     n_keys_remaining = n_keys
 
 def newGame():
     game.__init__()
-    global n_enemies, n_keys, n_keys_remaining, is_game_over
-    n_enemies = 40
-    n_keys = 1
+    global n_enemies, n_keys, n_keys_remaining, is_game_over, is_main_menu
+    n_enemies = 10
+    n_keys = 2
     generateCharacters(n_enemies, n_keys)
     n_keys_remaining = n_keys
     is_game_over = False
+    is_main_menu = False
 
 def generateCharacters(n_enemies, n_keys):
     global game
@@ -114,10 +134,12 @@ def generateCharacters(n_enemies, n_keys):
 game = Game()
 n_enemies: int
 n_keys: int
-is_game_over = bool
-newGame()
+is_game_over = False
+is_main_menu = True
+# newGame()
+goMainMenu()
 
-n_keys_remaining = n_keys
+# n_keys_remaining = n_keys
 
 # For the animation purposes: every n clock lap
 animation_index = 0
@@ -126,25 +148,31 @@ animation_delay = 5
 
 
 
-# --------------------------------------------------------------------
-
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if is_main_menu and event.type == pygame.MOUSEBUTTONDOWN:
+            newGame()
+            is_main_menu = False
+        if is_game_over and event.type == pygame.MOUSEBUTTONDOWN:
+            is_game_over = False
+            goMainMenu()
+            
 
-    screen.fill("black")
+    if not is_main_menu:
+        screen.fill("black")
 
-    if not is_game_over:
+    if not is_game_over and not is_main_menu:
         # flashlight effect
         player_pos = game.player.rect
         flashlight_rect = game.flashlight.get_rect(center=(player_pos.x + game.player_width/2, player_pos.y + game.player_height/2))
-
         screen3 = screen.copy()
-        # game.all_sprite_list.draw(screen3)
         screen.blit(screen3, (0, 0))
         screen2 = screen.copy() 
         screen2.blit(game.flashlight, flashlight_rect.topleft)
+
+        # Render the player
         screen2.blit(game.player.image, game.player.rect.topleft)
 
         # Render the enemies and other objects if they are near to the main character
@@ -158,9 +186,6 @@ while running:
             screen2.blit(game.door.image, game.door.rect.topleft)
 
         screen.blit(screen2, (0, 0))
-        
-
-        # RENDER YOUR GAME HERE
         
         # This allows to give animations to the characters
         if animation_timer >= animation_delay:
@@ -216,18 +241,10 @@ while running:
         score_text = "Llaves restantes: " + str(n_keys_remaining)
         score_render = game.font.render(score_text, True, WHITE)
         screen.blit(score_render, [200, 13])
+    elif is_game_over:
+        gameOver()
     else:
-        screen.fill("black")
-        game_over_text = game.font.render("GAME OVER", True, WHITE)
-        game_over_info = game.font_small.render("Da click en cualquier lugar para volver al menú principal", True, GRAY)
-        game_over_text_rect = game_over_text.get_rect(center=(screen_width // 2, screen_height // 2))
-        game_over_info_rect = game_over_info.get_rect(center=(screen_width // 2, screen_height // 2 + 30))
-        screen.blit(game_over_text, game_over_text_rect.topleft)
-        screen.blit(game_over_info, game_over_info_rect.topleft)
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                is_game_over = False
-                newGame()
+        goMainMenu()
     
 
     pygame.display.flip()
