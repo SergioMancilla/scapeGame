@@ -4,8 +4,11 @@ Este es un pequeño juego desarrollado en Python, usando la librería PyGame: ht
 ## Para poder jugar:
 1. Clona el repositorio
 2. Crea un ambiente virtual de Python dentro de la carpeta del proyecto: `python -m venv env-name` (Puedes consultar aquí: https://docs.python.org/es/3.13/tutorial/venv.html)
-3. Instala las dependencias: `pip install -r requirements.txt`
-4. Ejecuta el proyecto:
+3. Activar el ambiente virtual. Esto depende del sistema operativo, pero puedes moverte hasta la carpeta `env-name/Scripts` y ejecutar el comando `activate` o `activate.bat`
+4. Instala las dependencias: `pip install -r requirements.txt`
+5. Ejecuta el proyecto: `python initial.py`
+
+Nota: dependiendo de tu sistema operativo o versión de Python instalada, es posible que el comando a ejecutar no sea `python`, sino `python3` o `py`
 
 ## ¿Cómo jugar?
 El juego consiste en tener que encontrar la cantidad de llaves necesarias para abrir puertas.
