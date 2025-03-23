@@ -8,7 +8,7 @@ Este es un pequeño juego desarrollado en Python, usando la librería PyGame: ht
 4. Instala las dependencias: `pip install -r requirements.txt`
 5. Ejecuta el proyecto: `python initial.py`
 
-Nota: dependiendo de tu sistema operativo o versión de Python instalada, es posible que el comando a ejecutar no sea `python`, sino `python3` o `py`
+Nota: dependiendo de tu sistema operativo o versión de Python instalada, es posible que el comando a ejecutarsea `python`, `python3` o `py`.
 
 ## ¿Cómo jugar?
 El juego consiste en tener que encontrar la cantidad de llaves necesarias para abrir puertas.
