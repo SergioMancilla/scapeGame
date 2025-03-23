@@ -1,6 +1,14 @@
-# scapeGame
+# ScapeGame
+Este es un pequeño juego desarrollado en Python, usando la librería PyGame: https://pypi.org/project/pygame/
 
-EL juego consiste en tener que encontrar la cantidad de "llaves" necesarias para abrir puertas.
+## Para poder jugar:
+1. Clona el repositorio
+2. Crea un ambiente virtual de Python dentro de la carpeta del proyecto: `python -m venv env-name` (Puedes consultar aquí: https://docs.python.org/es/3.13/tutorial/venv.html)
+3. Instala las dependencias: `pip install -r requirements.txt`
+4. Ejecuta el proyecto:
+
+## ¿Cómo jugar?
+El juego consiste en tener que encontrar la cantidad de llaves necesarias para abrir puertas.
 Sencillo, ¿cierto? Pues, estarás casi a oscuras, sólo con un espacio circular que rodea al personaje, como si llevara una linterna. Mientras recorres el mapa para buscar las llaves, encontrarás 3 tipos de montruos, con diferentes cualidades:
 - Zombie: Es el más lento y también el que menos daño hace
 - Walker: Su apariencia es espeluznante y tiene mayor ataque que el anterior
